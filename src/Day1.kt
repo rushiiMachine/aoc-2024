@@ -10,22 +10,21 @@ fun d1part1() {
 	val input = readInput("day1.txt")
 	val lines = input.lines()
 
-	val list1 = mutableListOf<Int>()
-	val list2 = mutableListOf<Int>()
+	val left = mutableListOf<Int>()
+	val right = mutableListOf<Int>()
 
 	for (line in lines) {
 		val (val1, val2) = line.split("   ")
-		list1 += val1.toInt()
-		list2 += val2.toInt()
+		left += val1.toInt()
+		right += val2.toInt()
 	}
 
-	list1.sort()
-	list2.sort()
+	left.sort()
+	right.sort()
 
-	var sum = 0
-	for (i in 0..list1.lastIndex) {
-		sum += abs(list1[i] - list2[i])
-	}
+	val sum = left
+		.zip(right) { a, b -> abs(a - b) }
+		.sum()
 
 	sum.print()
 }
@@ -34,18 +33,18 @@ fun d1part2() {
 	val input = readInput("day1.txt")
 	val lines = input.lines()
 
-	val list1 = mutableListOf<Int>()
-	val list2 = mutableListOf<Int>()
+	val left = mutableListOf<Int>()
+	val right = mutableListOf<Int>()
 
 	for (line in lines) {
 		val (val1, val2) = line.split("   ")
-		list1 += val1.toInt()
-		list2 += val2.toInt()
+		left += val1.toInt()
+		right += val2.toInt()
 	}
 
 	var sum = 0
-	for (num in list1) {
-		sum += num * list2.count { it == num }
+	for (num in left) {
+		sum += num * right.count { it == num }
 	}
 	sum.print()
 }

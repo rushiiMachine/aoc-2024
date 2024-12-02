@@ -10,15 +10,14 @@ fun d2part1() {
 	val input = readInput("day2.txt")
 	var total = 0
 
-	nextLine@ for (line in input.lines()) {
+	nextLine@
+	for (line in input.lines()) {
 		val reports = line.extractNumbersSeparated()
 		var prev = reports[0]
-		val inc = reports[1] > reports[0]
+		val increasing = reports[1] > reports[0]
 
-		for (i in 1..<reports.size) {
-			val report = reports[i]
-
-			if (inc != report > prev || abs(report - prev) !in 1..3)
+		for (report in reports.skip(1)) {
+			if (increasing != report > prev || abs(report - prev) !in 1..3)
 				continue@nextLine
 
 			prev = report
@@ -34,16 +33,16 @@ fun d2part2() {
 	val input = readInput("day2.txt")
 	var total = 0
 
-	nextLine@ for (line in input.lines()) {
+	nextLine@
+	for (line in input.lines()) {
 		val reports = line.extractNumbersSeparated()
 		var prev = reports[0]
-		val inc = reports[1] > reports[0]
+		val increasing = reports[1] > reports[0]
 		var badDetected = false
 
-		nextReport@ for (i in 1..<reports.size) {
-			val report = reports[i]
-
-			if (inc != report > prev || abs(report - prev) !in 1..3) {
+		nextReport@
+		for (report in reports.skip(1)) {
+			if (increasing != report > prev || abs(report - prev) !in 1..3) {
 				if (!badDetected) {
 					badDetected = true
 					prev = report
