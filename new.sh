@@ -1,6 +1,8 @@
-contents="fun main() {
-	d$1part1()
-	d$1part2()
+contents="import kotlin.system.measureTimeMillis
+
+fun main() {
+	println(\"Part 1 in \${measureTimeMillis { d$1part1() }}ms\")
+	println(\"Part 2 in \${measureTimeMillis { d$1part2() }}ms\")
 }
 
 fun d$1part1() {
@@ -8,7 +10,6 @@ fun d$1part1() {
 }
 
 fun d$1part2() {
-	val input = readInput(\"day$1.txt\")
 }"
 
 touch "./src/Day$1.kt"
