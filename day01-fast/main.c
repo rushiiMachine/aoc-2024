@@ -65,55 +65,6 @@ int main()
 	return 0;
 }
 
-struct minData
-{
-	uint32_t value;
-	size_t index;
-};
-
-struct minData minAt(uint32_t *arr, size_t length)
-{
-	struct minData min = {
-		.value = arr[0],
-		.index = 0,
-	};
-
-	for (size_t i = 0; i < length; i++)
-	{
-		uint32_t value = arr[i];
-		min.index = value < min.value ? i : min.index;
-		min.value = value < min.value ? value : min.value;
-	}
-
-	return min;
-}
-
-// void parse2(const char *buf)
-// {
-//     __m128i mulMask = _mm_setr_epi32(10000, 1000, 100, 10);
-//     __m128i subMask = _mm_setr_epi8('0', '0', '0', '0', '0', 0, 0, 0, '0', '0', '0', '0', '0', 0, 0, 0);
-//     __m128i subtracted128, intermediate128;
-//     __m256i intermediate256;
-
-//     for (uint32_t i = 0; i < 1000; ++i)
-//     {
-//         // Load from buffer & subtract
-//         intermediate128 = _mm_loadu_si128((__m128i_u *)(buf + (14 * i)));
-//         subtracted128 = _mm_sub_epi8(intermediate128, subMask);
-
-//         // Left side
-//         intermediate128 = _mm_cvtepu8_epi32(subtracted128);
-//         intermediate128 = _mm_mullo_epi32(intermediate128, mulMask);
-//         left[i] = ((uint32_t *)&intermediate256)[0] + ((uint32_t *)&intermediate128)[1] + ((uint32_t *)&intermediate128)[2] + ((uint32_t *)&intermediate128)[3] + ((uint8_t *)&subtracted128)[4];
-
-//         // Right side
-//         subtracted128 = _mm_srli_si128(subtracted128, 8); // Shift right 8 bytes to get right half
-//         intermediate128 = _mm_cvtepu8_epi32(subtracted128);
-//         intermediate128 = _mm_mullo_epi32(intermediate128, mulMask);
-//         right[i] = ((uint32_t *)&intermediate256)[0] + ((uint32_t *)&intermediate128)[1] + ((uint32_t *)&intermediate128)[2] + ((uint32_t *)&intermediate128)[3] + ((uint8_t *)&subtracted128)[4];
-//     }
-// }
-
 void parseInput()
 {
 	__m256i mulMask = _mm256_setr_epi32(10000, 1000, 100, 10, 10000, 1000, 100, 10);
@@ -155,11 +106,6 @@ inline int compareFunc(const void *a, const void *b)
 uint64_t part1()
 {
 	parseInput();
-
-	// for (size_t i = 0; i < 1000; i++)
-	// {
-	//     printf_s("%u: %u %u\n", i, left[i], right[i]);
-	// }
 
 	// Sort both sides ascending
 	simd_qsort_uint32(left, 1000);
