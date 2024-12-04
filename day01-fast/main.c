@@ -74,33 +74,35 @@ void parseInput()
 
 	for (uint32_t i = 0; i < 1000; ++i)
 	{
-		// Load from buffer & subtract
+		// Load from inside buffer unaligned & subtract ascii '0' to get integer value
 		intermediate128 = _mm_loadu_si128((__m128i_u *)(AOC_INPUT + (14 * i)));
 		subtracted128 = _mm_sub_epi8(intermediate128, subMask);
 
-		// Combine left & rifght, expand into 8x uint32_t in a __m256i
-		// https://www.cs.virginia.edu/~cr4bd/3330/F2018/simdref.html
+		// Pack 4 most significant bytes from left & right into a single register,
+		// then expand each uint8_t into uint32_t, filling up the entire register.
+		// _mm256_permute2x128_si256 explanation: https://www.cs.virginia.edu/~cr4bd/3330/F2018/simdref.html
 		intermediate256 = _mm256_permute2x128_si256(
 			_mm256_cvtepu8_epi32(subtracted128),					// Left side in first 128-bits
 			_mm256_cvtepu8_epi32(_mm_srli_si128(subtracted128, 8)), // Right side in first 128-bits
-			0b00100100												// First half of a, first half of b
+			0b00100100												// Select first half of a, first half of b
 		);
 
-		// Apply multiplication
+		// Apply multiplication to increase each number to it's proper base-10 value
 		intermediate256 = _mm256_mullo_epi32(intermediate256, mulMask);
 
-		// Combine back into two numbers
-		uint32_t *largest = (uint32_t *)&intermediate256;
-		uint8_t *smallest = (uint8_t *)&subtracted128;
+		// Partial sum each half of this register.
+		// _mm256_srli_si256 shifts each 128-bit lane separately, which is perfect (left & right are packed side by side).
+		// This saves us ~0.25us compared to 4 dependent adds (ie, largest[0] + largest[1] + largest[2] + largest[3])
+		// Based on https://stackoverflow.com/a/10589306/13964629
+		intermediate256 = _mm256_add_epi32(intermediate256, _mm256_srli_si256(intermediate256, 4));
+		intermediate256 = _mm256_add_epi32(intermediate256, _mm256_srli_si256(intermediate256, 8));
+		intermediate256 = _mm256_add_epi32(intermediate256, _mm256_srli_si256(intermediate256, 16));
+		intermediate256 = _mm256_add_epi32(intermediate256, _mm256_srli_si256(intermediate256, 32));
 
-		left[i] = largest[0] + largest[1] + largest[2] + largest[3] + smallest[4];
-		right[i] = largest[4] + largest[5] + largest[6] + largest[7] + smallest[12];
+		// Combine left & right back into the most significant part + single digit that was left out earlier
+		left[i] = _mm256_extract_epi32(intermediate256, 0) + _mm_extract_epi8(subtracted128, 4);
+		right[i] = _mm256_extract_epi32(intermediate256, 4) + _mm_extract_epi8(subtracted128, 12);
 	}
-}
-
-inline int compareFunc(const void *a, const void *b)
-{
-	return *(uint32_t *)a - *(uint32_t *)b;
 }
 
 uint64_t part1()
@@ -118,9 +120,11 @@ uint64_t part1()
 		__m256i *dataLeft = (__m256i *)left + i;
 		__m256i *dataRight = (__m256i *)right + i;
 
-		// Subtract 8 signed integers and get the absolute value
+		// Subtract 8 signed integers and get the absolute values
 		__m256i absDiff = _mm256_abs_epi32(_mm256_sub_epi32(*dataLeft, *dataRight));
 
+		// Sum all uint32_t values in register
+		// Partial sum trick doesn't work here, slows down by 0.05us
 		uint32_t *data = (uint32_t *)&absDiff;
 		total += data[0] + data[1] + data[2] + data[3] + data[4] + data[5] + data[6] + data[7];
 	}
