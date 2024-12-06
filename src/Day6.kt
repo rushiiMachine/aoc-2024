@@ -1,4 +1,5 @@
-import me.carleslc.kotlinextensions.arrays.array2d
+import me.carleslc.kotlinextensions.arrays.Matrix
+import me.carleslc.kotlinextensions.arrays.matrix
 import kotlin.system.measureTimeMillis
 
 fun main() {
@@ -6,121 +7,101 @@ fun main() {
 	println("Part 2 in ${measureTimeMillis { d6part2() }}ms")
 }
 
-data class Position(
+data class Square(
 	var visited: Boolean = false,
 	var obstacle: Boolean = false,
 	var startPos: Boolean = false,
 )
 
-fun d6part1() {
-	val input = readInput("day6.txt")
+data class Move(val x: Int, val y: Int, val direction: Direction)
+
+enum class Direction(val matrixX: Int, val matrixY: Int) {
+	North(0, -1),
+	East(1, 0),
+	South(0, 1),
+	West(-1, 0);
+
+	fun rotateRight(): Direction = (entries.indexOf(this) + 1)
+		.let { if (it < 4) entries[it] else North }
+}
+
+// parse into y,x
+fun parseInput(input: String): Matrix<Square> {
 	val lines = input.lines()
 
-	// y,x
-	val board = array2d(lines.size) { Array(lines[0].length) { Position() } }
+	return matrix(lines.size, lines[0].length) { y, x ->
+		Square(
+			visited = lines[y][x] == '^',
+			obstacle = lines[y][x] == '#',
+			startPos = lines[y][x] == '^',
+		)
+	}
+}
 
-	// parse
-	for ((y, line) in input.lines().withIndex()) {
-		for ((x, char) in line.toCharArray().withIndex()) {
-			board[y][x] = Position(
-				visited = char == '^',
-				obstacle = char == '#',
-				startPos = char == '^',
-			)
+fun getStartPos(matrix: Matrix<Square>): Pair<Int, Int> { // y, x
+	for ((y, row) in matrix.withIndex()) {
+		for ((x, square) in row.withIndex()) {
+			if (square.startPos) return y to x
 		}
 	}
+	error("unreachable")
+}
 
-	var posY = board.indexOfFirst { it.any { it.startPos } }
-	var posX = board[posY].indexOfFirst { it.startPos }
-	var direction = "north"
+fun d6part1() {
+	val input = readInput("day6.txt")
+	val board = parseInput(input)
+
+	var (posY, posX) = getStartPos(board)
+	var direction = Direction.North
 
 	while (true) {
-		// Coordinate difference to next square in direction
-		val (xDiff, yDiff) = when (direction) {
-			"north" -> 0 to -1
-			"south" -> 0 to 1
-			"east" -> 1 to 0
-			"west" -> -1 to 0
-			else -> error("")
-		}
-
 		// If next square is an obstacle, change direction
-		if (board.getOrNull(posY + yDiff)?.getOrNull(posX + xDiff)?.obstacle ?: break) {
-			direction = when (direction) {
-				"north" -> "east"
-				"east" -> "south"
-				"south" -> "west"
-				"west" -> "north"
-				else -> error("")
-			}
+		if (board
+				.getOrNull(posY + direction.matrixY)
+				?.getOrNull(posX + direction.matrixX)
+				?.obstacle ?: break
+		) {
+			direction = direction.rotateRight()
 		}
 		// No obstacle in next square, move to it and mark it visited
 		else {
-			posY += yDiff
-			posX += xDiff
+			posY += direction.matrixY
+			posX += direction.matrixX
 			board.getOrNull(posY)?.getOrNull(posX)?.visited = true
 		}
 	}
 
+	// Count up all square visited
 	board.sumOf { it.count { it.visited } }.print()
 }
 
 fun d6part2() {
 	val input = readInput("day6.txt")
-	val lines = input.lines()
+	val board = parseInput(input)
 	var total = 0
 
-	// y,x
-	val board = array2d(lines.size) { Array(lines[0].length) { Position() } }
-
-	// parse
-	for ((y, line) in input.lines().withIndex()) {
-		for ((x, char) in line.toCharArray().withIndex()) {
-			board[y][x] = Position(
-				visited = char == '^',
-				obstacle = char == '#',
-				startPos = char == '^',
-			)
-		}
-	}
-
 	fun stuckInLoop(): Boolean {
-		var posY = board.indexOfFirst { it.any { it.startPos } }
-		var posX = board[posY].indexOfFirst { it.startPos }
-		var direction = "north"
-
-		data class Move(val x: Int, val y: Int, val direction: String)
-
 		val moves = mutableSetOf<Move>()
+		var (posY, posX) = getStartPos(board)
+		var direction = Direction.North
 
 		while (true) {
 			// If exact position and orientation has been seen before, loop detected
 			if (!moves.add(Move(posX, posY, direction)))
 				return true
 
-			// Coordinate difference to next square in direction
-			val (xDiff, yDiff) = when (direction) {
-				"north" -> 0 to -1
-				"south" -> 0 to 1
-				"east" -> 1 to 0
-				"west" -> -1 to 0
-				else -> error("")
-			}
-
 			// If next square is an obstacle, change direction
-			if (board.getOrNull(posY + yDiff)?.getOrNull(posX + xDiff)?.obstacle ?: break) {
-				direction = when (direction) {
-					"north" -> "east"
-					"east" -> "south"
-					"south" -> "west"
-					"west" -> "north"
-					else -> error("")
-				}
+			if (board
+					.getOrNull(posY + direction.matrixY)
+					?.getOrNull(posX + direction.matrixX)
+					?.obstacle ?: break
+			) {
+				direction = direction.rotateRight()
 			}
 			// No obstacle in next square, move to it and mark it visited
 			else {
-				posY += yDiff
-				posX += xDiff
+				posY += direction.matrixY
+				posX += direction.matrixX
 				board.getOrNull(posY)?.getOrNull(posX)?.visited = true
 			}
 		}
@@ -128,14 +109,13 @@ fun d6part2() {
 	}
 
 	// Set obstacles where they don't exist and see if it ends up in a loop
-	for (y in lines.indices) {
-		for (x in lines[0].indices) {
-			if (board[y][x].obstacle) continue
+	for (row in board) {
+		for (square in row) {
+			if (square.obstacle) continue
 
-			board[y][x].obstacle = true
-			if (stuckInLoop())
-				total += 1
-			board[y][x].obstacle = false
+			square.obstacle = true
+			if (stuckInLoop()) total++
+			square.obstacle = false
 		}
 	}
 
