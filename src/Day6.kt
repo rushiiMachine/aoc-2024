@@ -21,8 +21,7 @@ enum class Direction(val matrixX: Int, val matrixY: Int) {
 	South(0, 1),
 	West(-1, 0);
 
-	fun rotateRight(): Direction = (entries.indexOf(this) + 1)
-		.let { if (it < 4) entries[it] else North }
+	fun rotateRight(): Direction = entries[(entries.indexOf(this) + 1) % entries.size]
 }
 
 // parse into y,x

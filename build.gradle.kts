@@ -14,6 +14,7 @@ dependencies {
 	implementation("io.arrow-kt:arrow-eval:1.2.4")
 	implementation("io.arrow-kt:arrow-fx-coroutines:1.2.4")
 	implementation("me.carleslc:kotlin-extensions:0.8") // https://github.com/Carleslc/kotlin-extensions?tab=readme-ov-file
+	implementation("org.bouncycastle:bcprov-lts8on:2.73.7")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
 	implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
 }
