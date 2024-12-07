@@ -22,7 +22,7 @@ fun d5part1() {
 	// Parse updates
 	line@
 	for (line in halves[1].lines()) {
-		val updateIds = line.extractNumbersSeparated()
+		val updateIds = line.extractIntSeparated()
 
 		for ((index, updateId) in updateIds.withIndex()) {
 			val previousIds = updateIds.slice(0..<index)
@@ -55,7 +55,7 @@ fun d5part2() {
 	// Parse updates
 	line@
 	for (line in halves[1].lines()) {
-		val updateIds = line.extractNumbersSeparated().toMutableList()
+		val updateIds = line.extractIntSeparated().toMutableList()
 
 		var badUpdate = false
 		var updateIndex = 0

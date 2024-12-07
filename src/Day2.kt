@@ -12,7 +12,7 @@ fun d2part1() {
 
 	nextLine@
 	for (line in input.lines()) {
-		val reports = line.extractNumbersSeparated()
+		val reports = line.extractIntSeparated()
 		var prev = reports[0]
 		val increasing = reports[1] > reports[0]
 
@@ -35,7 +35,7 @@ fun d2part2() {
 
 	nextLine@
 	for (line in input.lines()) {
-		val reports = line.extractNumbersSeparated()
+		val reports = line.extractIntSeparated()
 		var prev = reports[0]
 		val increasing = reports[1] > reports[0]
 		var badDetected = false
