@@ -5,6 +5,8 @@
 #include <windows.h>
 #include "main.h"
 
+uint32_t parse5DigitInt(const char *buf);
+
 int main()
 {
     const double BENCHMARK_RUNS = 100000;

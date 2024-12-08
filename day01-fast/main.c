@@ -1,16 +1,13 @@
-#include <math.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <windows.h>
-#include <immintrin.h>
 #include "main.h"
 #include "sort_bindings.h"
-
-const double BENCHMARK_RUNS = 1000000;
+#include <immintrin.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <windows.h>
 
 // 1000 lines of input + 128 to be safe when copying into __m128i
-#define AOC_INPUT_LENGTH (size_t)(14 * 1000 - 1)
+#define AOC_INPUT_LENGTH ((size_t)(14 * 1000 - 1))
 char AOC_INPUT[AOC_INPUT_LENGTH + 128] __attribute__((__aligned__(32)));
 
 // Parsed left & right lists
@@ -19,17 +16,17 @@ uint32_t right[1000] __attribute__((__aligned__(32)));
 
 int main()
 {
-	FILE *fp;
+	FILE* fp;
 	if (fopen_s(&fp, "input.txt", "rb") != 0)
 	{
 		fprintf_s(stderr, "Failed to open input.txt for AOC input\n");
 		return 1;
-	};
+	}
 	if (AOC_INPUT_LENGTH > fread(AOC_INPUT, sizeof(char), AOC_INPUT_LENGTH, fp))
 	{
 		fprintf_s(stderr, "AOC input is insufficient length\n");
 		return 1;
-	};
+	}
 	fclose(fp);
 
 	// Bind to core 2
@@ -40,6 +37,8 @@ int main()
 	uint64_t result;
 
 	QueryPerformanceFrequency(&frequency);
+
+	const size_t BENCHMARK_RUNS = 100000;
 
 	for (size_t i = 0; i < BENCHMARK_RUNS; i++)
 	{
@@ -75,7 +74,7 @@ void parseInput()
 	for (uint32_t i = 0; i < 1000; ++i)
 	{
 		// Load from inside buffer unaligned & subtract ascii '0' to get integer value
-		intermediate128 = _mm_loadu_si128((__m128i_u *)(AOC_INPUT + (14 * i)));
+		intermediate128 = _mm_loadu_si128((__m128i_u*)(AOC_INPUT + (14 * i)));
 		subtracted128 = _mm_sub_epi8(intermediate128, subMask);
 
 		// Pack 4 most significant bytes from left & right into a single register,
@@ -114,24 +113,24 @@ uint64_t part1()
 	simd_qsort_uint32(right, 1000);
 
 	uint64_t total = 0;
-	for (uint8_t i = 0; i < 1000 / (256 / 32); i++)
+	for (size_t i = 0; i < 1000 / (256 / 32); i++)
 	{
 		// These are already aligned to 32 bytes
-		__m256i *dataLeft = (__m256i *)left + i;
-		__m256i *dataRight = (__m256i *)right + i;
+		__m256i* dataLeft = (__m256i*)left + i;
+		__m256i* dataRight = (__m256i*)right + i;
 
 		// Subtract 8 signed integers and get the absolute values
 		__m256i absDiff = _mm256_abs_epi32(_mm256_sub_epi32(*dataLeft, *dataRight));
 
 		// Sum all uint32_t values in register
 		// Partial sum trick doesn't work here, slows down by 0.05us
-		uint32_t *data = (uint32_t *)&absDiff;
+		uint32_t* data = (uint32_t*)&absDiff;
 		total += data[0] + data[1] + data[2] + data[3] + data[4] + data[5] + data[6] + data[7];
 	}
 	return total;
 }
 
-inline uint32_t countConsecutive(uint32_t *arr, uint32_t *end)
+inline uint32_t countConsecutive(uint32_t* arr, uint32_t* end)
 {
 	uint32_t value = (arr++)[0],
 			 total = 1;
@@ -150,7 +149,7 @@ uint64_t part2()
 	while (leftOffset < 1000)
 	{
 		uint32_t leftValue = left[leftOffset];
-		uint32_t leftValueCount = countConsecutive((uint32_t *)(left + leftOffset), (uint32_t *)(left + 1000));
+		uint32_t leftValueCount = countConsecutive((uint32_t*)(left + leftOffset), (uint32_t*)(left + 1000));
 
 		while (right[rightOffset] < leftValue && rightOffset < 1000)
 			rightOffset++;
@@ -161,7 +160,7 @@ uint64_t part2()
 			continue;
 		}
 
-		uint32_t rightValueCount = countConsecutive((uint32_t *)(right + rightOffset), (uint32_t *)(right + 1000));
+		uint32_t rightValueCount = countConsecutive((uint32_t*)(right + rightOffset), (uint32_t*)(right + 1000));
 
 		leftOffset += leftValueCount;
 		rightOffset += rightValueCount;
