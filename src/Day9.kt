@@ -9,20 +9,14 @@ fun main() {
 
 fun d9part1() {
 	val input = readInput("day9.txt")
-	val ids = mutableListOf<Int>()
 
-	for ((index, value) in input.withIndex()) {
-		if (index.even()) {
-			val id = index / 2
-			for (i in 0 until value.digitToInt()) {
-				ids += id
-			}
+	val ids = input.withIndex().flatMap { (idx, value) ->
+		if (idx.even()) {
+			List(value.digitToInt()) { idx / 2 }
 		} else {
-			for (i in 0 until value.digitToInt()) {
-				ids += -1
-			}
+			List(value.digitToInt()) { -1 }
 		}
-	}
+	}.toMutableList()
 
 	for (i in ids.indices.reversed()) {
 		val id = ids[i]
@@ -44,11 +38,10 @@ fun d9part2() {
 	data class Page(var blocks: Int, val id: Int)
 
 	val input = readInput("day9.txt")
-	val pages = mutableListOf<Page>()
-
-	for ((index, value) in input.withIndex()) {
-		pages += Page(value.digitToInt(), if (index.even()) index / 2 else -1)
-	}
+	val pages = input
+		.withIndex()
+		.map { (idx, blockSize) -> Page(blockSize.digitToInt(), if (idx.even()) idx / 2 else -1) }
+		.toMutableList()
 
 	var i = pages.lastIndex
 	while (i >= 0) {
