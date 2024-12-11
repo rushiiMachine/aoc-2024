@@ -1,9 +1,11 @@
 @file:Suppress("unused")
 
 import me.carleslc.kotlinextensions.arrays.*
+import me.carleslc.kotlinextensions.number.log10
 import java.io.File
 import java.math.BigInteger
 import java.security.MessageDigest
+import kotlin.math.abs
 
 // TODO: take inspiration from eagely's AOC utils
 //       and this: https://github.com/mdekaste/AdventOfCode2024/blob/master/src/year2024/day4/Day4.kt
@@ -118,3 +120,19 @@ val SAMPLE_MATRIX: Matrix<Int>
 		arrayOf(3, 3, 8, 3, 2, 7),
 		arrayOf(9, 5, 0, 2, 8, 8),
 	)
+
+/**
+ * Count the amount of digits in this number. Negative sign is disregarded.
+ */
+fun Int.length(): Int = when(this) {
+	0 -> 1
+	else -> abs(toDouble()).log10().toInt() + 1
+}
+
+/**
+ * Count the amount of digits in this number. Negative sign is disregarded.
+ */
+fun Long.length(): Int = when(this) {
+	0L -> 1
+	else -> abs(toDouble()).log10().toInt() + 1
+}
