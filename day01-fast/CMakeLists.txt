@@ -13,4 +13,5 @@ set(CMAKE_CXX_FLAGS "-Wall -Wextra ${SIMD_FLAGS}")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -fno-stack-protector")
 
-add_executable(simd_test main.c sort_bindings.cpp)
+add_executable(day01 main.c sort_bindings.cpp)
+add_executable(day11 day11.cpp)
