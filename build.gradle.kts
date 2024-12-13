@@ -17,6 +17,8 @@ dependencies {
 	implementation("org.bouncycastle:bcprov-lts8on:2.73.7")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
 	implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
+	implementation("org.jetbrains.kotlinx:multik-core:0.2.3")
+	implementation("org.jetbrains.kotlinx:multik-default:0.2.3")
 	implementation(project(":KotlinDiscreteMathToolkit")) // https://github.com/MarcinMoskala/KotlinDiscreteMathToolkit
 }
 
