@@ -124,7 +124,7 @@ val SAMPLE_MATRIX: Matrix<Int>
 /**
  * Count the amount of digits in this number. Negative sign is disregarded.
  */
-fun Int.length(): Int = when(this) {
+fun Int.length(): Int = when (this) {
 	0 -> 1
 	else -> abs(toDouble()).log10().toInt() + 1
 }
@@ -132,7 +132,17 @@ fun Int.length(): Int = when(this) {
 /**
  * Count the amount of digits in this number. Negative sign is disregarded.
  */
-fun Long.length(): Int = when(this) {
+fun Long.length(): Int = when (this) {
 	0L -> 1
 	else -> abs(toDouble()).log10().toInt() + 1
+}
+
+enum class Direction(val matrixX: Int, val matrixY: Int) {
+	North(0, -1),
+	East(1, 0),
+	South(0, 1),
+	West(-1, 0);
+
+	fun rotateLeft(): Direction = entries[(entries.indexOf(this) - 1).mod(entries.size)]
+	fun rotateRight(): Direction = entries[(entries.indexOf(this) + 1) % entries.size]
 }

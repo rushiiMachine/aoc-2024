@@ -15,15 +15,6 @@ data class Square(
 
 data class Move(val x: Int, val y: Int, val direction: Direction)
 
-enum class Direction(val matrixX: Int, val matrixY: Int) {
-	North(0, -1),
-	East(1, 0),
-	South(0, 1),
-	West(-1, 0);
-
-	fun rotateRight(): Direction = entries[(entries.indexOf(this) + 1) % entries.size]
-}
-
 // parse into y,x
 fun parseInput(input: String): Matrix<Square> {
 	val lines = input.lines()
