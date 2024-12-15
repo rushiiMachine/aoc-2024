@@ -146,3 +146,21 @@ enum class Direction(val matrixX: Int, val matrixY: Int) {
 	fun rotateLeft(): Direction = entries[(entries.indexOf(this) - 1).mod(entries.size)]
 	fun rotateRight(): Direction = entries[(entries.indexOf(this) + 1) % entries.size]
 }
+
+/**
+ * Iterator over a 2D structure.
+ * Yields values of `(aIdx, bIdx, value at a,b)`
+ */
+fun <T> Iterable<Iterable<T>>.iterator2D(): Sequence<Triple<Int, Int, T>> = sequence {
+	for ((aIdx, a) in this@iterator2D.withIndex()) {
+		for ((bIdx, b) in a.withIndex()) {
+			yield(Triple(aIdx, bIdx, b))
+		}
+	}
+}
+
+/**
+ * Iterator over this 2D matrix.
+ * Given a matrix of `mat[y][x]`, this yields values of `(y, x, mat[y][x])`
+ */
+fun <T> Matrix<T>.iterator2D(): Sequence<Triple<Int, Int, T>> = this.iterator2D()
