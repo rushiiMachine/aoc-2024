@@ -32,10 +32,10 @@ fun d15part1() {
 
 	// Recursively check if at least one empty spot is available in the direction before a wall
 	fun canMove(y: Int, x: Int, direction: Direction): Boolean {
-		return when (val nextBox = map[y + direction.matrixY][x + direction.matrixX]) {
+		return when (val nextBox = map[y + direction.y][x + direction.x]) {
 			'#' -> false
 			'.' -> true
-			'O' -> canMove(y + direction.matrixY, x + direction.matrixX, direction)
+			'O' -> canMove(y + direction.y, x + direction.x, direction)
 			else -> error("invalid box $nextBox at ($x,$y)")
 		}
 	}
@@ -43,14 +43,14 @@ fun d15part1() {
 	// Recursively move the 2nd last box to the last box, 3rd last to 2nd last, cursor to 1st, etc...
 	// Does not overwrite the initial cursor position
 	fun moveBoxes(y: Int, x: Int, direction: Direction) {
-		when (val nextBox = map[y + direction.matrixY][x + direction.matrixX]) {
+		when (val nextBox = map[y + direction.y][x + direction.x]) {
 			'#' -> error("invalid box value")
-			'O' -> moveBoxes(y + direction.matrixY, x + direction.matrixX, direction)
+			'O' -> moveBoxes(y + direction.y, x + direction.x, direction)
 			'.' -> {}
 			else -> error("invalid box $nextBox at ($x,$y)")
 		}
 		// Move this box to the next box
-		map[y + direction.matrixY][x + direction.matrixX] = map[y][x]
+		map[y + direction.y][x + direction.x] = map[y][x]
 	}
 
 	// Perform each robot move
@@ -104,19 +104,19 @@ fun d15part2() {
 
 	// Recursively check if at least one empty spot is available in the direction before a wall
 	fun canMove(y: Int, x: Int, direction: Direction): Boolean {
-		return when (val nextBox = map[y + direction.matrixY][x + direction.matrixX]) {
+		return when (val nextBox = map[y + direction.y][x + direction.x]) {
 			'.' -> true
 			'#' -> false
 			'[', ']' -> {
 				// Check the other half of [ or ] recursively as well if in N/S direction
 				// If in W/E then it functions the same as in part 1
-				if (direction in arrayOf(Direction.North, Direction.South)) {
+				if (direction.vertical) {
 					val xOffset = if (nextBox == '[') 1 else -1
-					if (!canMove(y + direction.matrixY, x + direction.matrixX + xOffset, direction))
+					if (!canMove(y + direction.y, x + direction.x + xOffset, direction))
 						return false
 				}
 
-				canMove(y + direction.matrixY, x + direction.matrixX, direction)
+				canMove(y + direction.y, x + direction.x, direction)
 			}
 
 			else -> error("invalid box $nextBox at ($x,$y)")
@@ -126,26 +126,26 @@ fun d15part2() {
 	// Recursively move the 2nd last box pair to the last box pair, 3rd last to 2nd last, etc..., cursor to entrypoint.
 	// Does not overwrite the initial cursor position
 	fun moveBoxes(y: Int, x: Int, direction: Direction) {
-		when (val nextBox = map[y + direction.matrixY][x + direction.matrixX]) {
+		when (val nextBox = map[y + direction.y][x + direction.x]) {
 			'.' -> {}
 			'[', ']' -> {
-				moveBoxes(y + direction.matrixY, x + direction.matrixX, direction)
+				moveBoxes(y + direction.y, x + direction.x, direction)
 
 				// Move the other half of [ or ] recursively as well if in N/S direction
 				// If in W/E then it functions the same as in part 1
-				if (direction in arrayOf(Direction.North, Direction.South)) {
+				if (direction.vertical) {
 					val xOffset = if (nextBox == '[') 1 else -1
-					moveBoxes(y + direction.matrixY, x + direction.matrixX + xOffset, direction)
+					moveBoxes(y + direction.y, x + direction.x + xOffset, direction)
 
 					// Clear the other half of [] otherwise it might not get overwritten
-					map[y + direction.matrixY][x + direction.matrixX + xOffset] = '.'
+					map[y + direction.y][x + direction.x + xOffset] = '.'
 				}
 			}
 
 			else -> error("invalid box $nextBox at ($x,$y)")
 		}
 		// Move this box to the next box
-		map[y + direction.matrixY][x + direction.matrixX] = map[y][x]
+		map[y + direction.y][x + direction.x] = map[y][x]
 	}
 
 	// Perform each robot move

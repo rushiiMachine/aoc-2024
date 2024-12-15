@@ -137,7 +137,7 @@ fun Long.length(): Int = when (this) {
 	else -> abs(toDouble()).log10().toInt() + 1
 }
 
-enum class Direction(val matrixX: Int, val matrixY: Int) {
+enum class Direction(val x: Int, val y: Int) {
 	North(0, -1),
 	East(1, 0),
 	South(0, 1),
@@ -145,6 +145,11 @@ enum class Direction(val matrixX: Int, val matrixY: Int) {
 
 	fun rotateLeft(): Direction = entries[(entries.indexOf(this) - 1).mod(entries.size)]
 	fun rotateRight(): Direction = entries[(entries.indexOf(this) + 1) % entries.size]
+
+	val vertical: Boolean
+		get() = this == North || this == South
+	val horizontal: Boolean
+		get() = this == East || this == West
 }
 
 /**

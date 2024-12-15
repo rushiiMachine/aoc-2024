@@ -75,9 +75,9 @@ fun d12part2() {
 			Direction.East, Direction.West -> {
 				for (y in map.indices) {
 					if (map[y][coord] != type || !visitedThisTime[y][coord]) continue
-					if (map[y].getOrNull(coord + direction.matrixX) == type) continue
+					if (map[y].getOrNull(coord + direction.x) == type) continue
 					if (map.getOrNull(y - 1)?.getOrNull(coord) == type
-						&& map.getOrNull(y - 1)?.getOrNull(coord + direction.matrixX) != type
+						&& map.getOrNull(y - 1)?.getOrNull(coord + direction.x) != type
 					) continue
 
 					sides++
@@ -88,9 +88,9 @@ fun d12part2() {
 			Direction.North, Direction.South -> {
 				for (x in map.indices) {
 					if (map[coord][x] != type || !visitedThisTime[coord][x]) continue
-					if (map.getOrNull(coord + direction.matrixY)?.getOrNull(x) == type) continue
+					if (map.getOrNull(coord + direction.y)?.getOrNull(x) == type) continue
 					if (map.getOrNull(coord)?.getOrNull(x - 1) == type
-						&& map.getOrNull(coord + direction.matrixY)?.getOrNull(x - 1) != type
+						&& map.getOrNull(coord + direction.y)?.getOrNull(x - 1) != type
 					) continue
 
 					sides++

@@ -47,16 +47,16 @@ fun d6part1() {
 	while (true) {
 		// If next square is an obstacle, change direction
 		if (board
-				.getOrNull(posY + direction.matrixY)
-				?.getOrNull(posX + direction.matrixX)
+				.getOrNull(posY + direction.y)
+				?.getOrNull(posX + direction.x)
 				?.obstacle ?: break
 		) {
 			direction = direction.rotateRight()
 		}
 		// No obstacle in next square, move to it and mark it visited
 		else {
-			posY += direction.matrixY
-			posX += direction.matrixX
+			posY += direction.y
+			posX += direction.x
 			board.getOrNull(posY)?.getOrNull(posX)?.visited = true
 		}
 	}
@@ -82,16 +82,16 @@ fun d6part2() {
 
 			// If next square is an obstacle, change direction
 			if (board
-					.getOrNull(posY + direction.matrixY)
-					?.getOrNull(posX + direction.matrixX)
+					.getOrNull(posY + direction.y)
+					?.getOrNull(posX + direction.x)
 					?.obstacle ?: break
 			) {
 				direction = direction.rotateRight()
 			}
 			// No obstacle in next square, move to it and mark it visited
 			else {
-				posY += direction.matrixY
-				posX += direction.matrixX
+				posY += direction.y
+				posX += direction.x
 				board.getOrNull(posY)?.getOrNull(posX)?.visited = true
 			}
 		}
