@@ -1,0 +1,40 @@
+sample input: 0,1,5,4,3,0
+self-replicating Areg: 117440
+0: A = A / 8
+1: out A % 8
+2: jnz A $0
+
+Ai = A // 8**i
+Xi = Ai % 8
+
+real input: 2, 4, 1, 6, 7, 5, 4, 4, 1, 7, 0, 3, 5, 5, 3, 0
+0: B = A % 8
+1: B = B ^ 6
+2: C = A / 2**B
+3: B = B ^ C
+4: B = B ^ 7
+5: A = A / 8
+6: out B % 8
+7: jnz A $0
+
+out ((((A % 8) ^ 6) ^ int(A / 2**((A % 8) ^ 6))) ^ 7) % 8
+A = A / 8
+jnz A $0
+
+For instructions x0, x1, x2, x3, x4, xi..., x15
+Ai = A // 8**i
+xi = ((((A % 8) ^ 6) ^ (A // 2**((A % 8) ^ 6))) ^ 7) % 8
+
+8**15 <= A < 8**16
+35184372088832 <= A < 281474976700000
+
+A = 37293246 input
+instructions length: 16
+instructions: 2, 4, 1, 6, 7, 5, 4, 4, 1, 7, 0, 3, 5, 5, 3, 0
+output from input: 1,5,0,1,7,4,1,0,3  -> len 9
+
+A = 37293246
+8**8 <= A < 8**9
+16777216 <= A < 134217728
+
+// rosie explanation: https://discord.com/channels/1015060230222131221/1312179898550456350/1318671042234945568

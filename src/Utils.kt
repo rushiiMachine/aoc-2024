@@ -169,3 +169,9 @@ fun <T> Iterable<Iterable<T>>.iterator2D(): Sequence<Triple<Int, Int, T>> = sequ
  * Given a matrix of `mat[y][x]`, this yields values of `(y, x, mat[y][x])`
  */
 fun <T> Matrix<T>.iterator2D(): Sequence<Triple<Int, Int, T>> = this.iterator2D()
+
+fun pow(x: Long, p: Long): Long {
+	var i = 1L
+	for (j in 1L..p) i *= x
+	return i
+}
