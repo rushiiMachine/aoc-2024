@@ -78,7 +78,7 @@ fun d17part2() {
 	}
 
 	// Queue of A register ranges to test at a specific xIdx, sorted by the lowest minimum value
-	val searchRanges = PriorityQueue<Pair<LongRange, Int>>(compareByDescending { (range) -> range.first })
+	val searchRanges = PriorityQueue<Pair<LongRange, Int>>(compareBy { (range) -> range.first })
 	searchRanges.add(initialRange to instructions.lastIndex)
 
 	while (searchRanges.isNotEmpty()) {
